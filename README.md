@@ -1,74 +1,562 @@
-Task tracker is a project used to track and manage your tasks. In this task, you will build a simple command line interface (CLI) to track what you need to do, what you have done, and what you are currently working on. This project will help you practice your programming skills, including working with the filesystem, handling user inputs, and building a simple CLI application.
+# Task Tracker Web App (Senior Dev Roadmap)
 
-### Requirements
-The application should run from the command line, accept user actions and inputs as arguments, and store the tasks in a JSON file. The user should be able to:
-* Add, Update, and Delete tasks
-* Mark a task as in progress or done
-* List all tasks
-* List all tasks that are done
-* List all tasks that are not done
-* List all tasks that are in progress
-### Here are some constraints to guide the implementation:
-* You can use any programming language to build this project.
-* Use positional arguments in command line to accept user inputs.
-* Use a JSON file to store the tasks in the current directory.
-* The JSON file should be created if it does not exist.
-* Use the native file system module of your programming language to interact with the JSON file.
-* Do not use any external libraries or frameworks to build this project.
-* Ensure to handle errors and edge cases gracefully.
+You will build:
 
-### Example
-The list of commands and their usage is given below:
+```text
+Frontend (HTML/CSS/JS)
+        ↓ fetch()
+Spring Boot REST API
+        ↓
+tasks.json
+```
 
-### bash
-# Adding a new task
-task-cli add "Buy groceries"
-# Output: Task added successfully (ID: 1)
-# Updating and deleting tasks
-task-cli update 1 "Buy groceries and cook dinner"
-task-cli delete 1
-# Marking a task as in progress or done
-task-cli mark-in-progress 1
-task-cli mark-done 1
-# Listing all tasks
-task-cli list
-# Listing tasks by status
-task-cli list done
-task-cli list todo
-task-cli list in-progress
-### Task Properties
-Each task should have the following properties:
+Goal:
 
-* id: A unique identifier for the task
-* description: A short description of the task
-* status: The status of the task (todo, in-progress, done)
-* createdAt: The date and time when the task was created
-* updatedAt: The date and time when the task was last updated
-Make sure to add these properties to the JSON file when adding a new task and update them when updating a task.
+* Learn CRUD
+* Learn REST APIs
+* Learn file handling
+* Learn frontend-backend connection
 
-### Getting Started
-Here are a few steps to help you get started with the Task Tracker CLI project:
+---
 
-### Set Up Your Development Environment
-Choose a programming language you are comfortable with (e.g., Python, JavaScript, etc.).
-Ensure you have a code editor or IDE installed (e.g., VSCode, PyCharm).
+# STACK
 
-### Project Initialization
-Create a new project directory for your Task Tracker CLI.
-Initialize a version control system (e.g., Git) to manage your project.
+Frontend:
 
-### Implementing Features
-Start by creating a basic CLI structure to handle user inputs.
-Implement each feature one by one, ensuring to test thoroughly before moving to the next e.g. implement adding task functionality first, listing next, then updating, marking as in progress, etc.
+* HTML
+* CSS
+* Vanilla JS
 
-### Testing and Debugging
-Test each feature individually to ensure they work as expected. Look at the JSON file to verify that the tasks are being stored correctly.
-Debug any issues that arise during development.
+Backend:
 
-### Finalizing the Project
-Ensure all features are implemented and tested.
-Clean up your code and add comments where necessary.
+* Java
+* Spring Boot
+* Jackson JSON
 
-By the end of this project, you will have developed a practical tool that can help you or others manage tasks efficiently. This project lays a solid foundation for more advanced programming projects and real-world applications.
+Storage:
 
-Happy coding!
+* JSON file
+
+Build Tool:
+
+* Gradle or Maven
+
+---
+
+# PHASE 1 — CREATE BACKEND
+
+## 1. Generate Spring Boot Project
+
+Use:
+
+* Spring Web
+
+Project name:
+
+```text
+task-tracker-backend
+```
+
+Package:
+
+```text
+com.tasktracker
+```
+
+---
+
+# 2. Project Structure
+
+```text
+src/main/java/com/tasktracker/
+
+├── controller/
+├── service/
+├── model/
+├── util/
+└── TaskTrackerApplication.java
+```
+
+---
+
+# 3. Create Task Model
+
+File:
+
+```text
+model/Task.java
+```
+
+Fields:
+
+```java
+private int id;
+private String description;
+private String status;
+private String createdAt;
+private String updatedAt;
+```
+
+Generate:
+
+* getters
+* setters
+* constructors
+
+Status values:
+
+* todo
+* in-progress
+* done
+
+---
+
+# 4. Create JSON File
+
+Root folder:
+
+```text
+tasks.json
+```
+
+Initial content:
+
+```json
+[]
+```
+
+---
+
+# 5. Create TaskService
+
+File:
+
+```text
+service/TaskService.java
+```
+
+Responsibilities:
+
+* read tasks.json
+* write tasks.json
+* CRUD logic
+
+---
+
+# 6. Setup Jackson
+
+Use:
+
+```java
+ObjectMapper
+```
+
+Functions:
+
+```java
+loadTasks()
+saveTasks()
+```
+
+---
+
+# 7. Implement CRUD
+
+## ADD TASK
+
+Method:
+
+```java
+addTask(String description)
+```
+
+Flow:
+
+1. Read JSON
+2. Generate ID
+3. Create task
+4. status = "todo"
+5. createdAt = now
+6. updatedAt = now
+7. Save JSON
+
+---
+
+## GET TASKS
+
+Method:
+
+```java
+getAllTasks()
+```
+
+Return list.
+
+---
+
+## UPDATE TASK
+
+Method:
+
+```java
+updateTask(int id, String description)
+```
+
+Flow:
+
+1. Find task
+2. Update description
+3. Update updatedAt
+4. Save
+
+---
+
+## DELETE TASK
+
+Method:
+
+```java
+deleteTask(int id)
+```
+
+---
+
+## MARK STATUS
+
+Method:
+
+```java
+updateStatus(int id, String status)
+```
+
+Allowed:
+
+* todo
+* in-progress
+* done
+
+---
+
+## FILTER BY STATUS
+
+Method:
+
+```java
+getTasksByStatus(String status)
+```
+
+---
+
+# PHASE 2 — CREATE CONTROLLER
+
+File:
+
+```text
+controller/TaskController.java
+```
+
+Use:
+
+```java
+@RestController
+@RequestMapping("/tasks")
+@CrossOrigin("*")
+```
+
+---
+
+# API DESIGN
+
+---
+
+## CREATE TASK
+
+```http
+POST /tasks
+```
+
+Body:
+
+```json
+{
+  "description": "Buy groceries"
+}
+```
+
+---
+
+## GET ALL TASKS
+
+```http
+GET /tasks
+```
+
+---
+
+## GET TASKS BY STATUS
+
+```http
+GET /tasks/status/done
+```
+
+---
+
+## UPDATE TASK
+
+```http
+PUT /tasks/1
+```
+
+Body:
+
+```json
+{
+  "description": "New task"
+}
+```
+
+---
+
+## DELETE TASK
+
+```http
+DELETE /tasks/1
+```
+
+---
+
+## UPDATE STATUS
+
+```http
+PATCH /tasks/1/status
+```
+
+Body:
+
+```json
+{
+  "status": "done"
+}
+```
+
+---
+
+# PHASE 3 — TEST BACKEND
+
+Use:
+
+* Postman
+  OR
+* browser
+  OR
+* Thunder Client VSCode extension
+
+Test ALL endpoints before frontend.
+
+---
+
+# PHASE 4 — CREATE FRONTEND
+
+Structure:
+
+```text
+frontend/
+
+├── index.html
+├── style.css
+└── script.js
+```
+
+---
+
+# HTML
+
+Create:
+
+* input
+* add button
+* filter buttons
+* task list container
+
+Example:
+
+```html
+<input id="taskInput">
+<button>Add</button>
+
+<div id="taskList"></div>
+```
+
+---
+
+# CSS
+
+Keep simple:
+
+* flexbox
+* spacing
+* card design
+* status colors
+
+---
+
+# JAVASCRIPT
+
+Core functions:
+
+```javascript
+loadTasks()
+addTask()
+deleteTask()
+updateTask()
+markDone()
+markInProgress()
+filterTasks()
+```
+
+---
+
+# FETCH API
+
+Example:
+
+```javascript
+fetch("http://localhost:8080/tasks")
+```
+
+---
+
+# LOAD TASKS
+
+Flow:
+
+1. fetch GET /tasks
+2. loop tasks
+3. render HTML
+
+---
+
+# ADD TASK
+
+Flow:
+
+1. get input value
+2. POST /tasks
+3. reload tasks
+
+---
+
+# DELETE TASK
+
+Flow:
+
+1. DELETE /tasks/id
+2. reload tasks
+
+---
+
+# UPDATE STATUS
+
+Flow:
+
+1. PATCH /tasks/id/status
+2. send status
+3. reload tasks
+
+---
+
+# RENDER TASK CARD
+
+Each task should show:
+
+* description
+* status
+* created date
+* buttons
+
+Example buttons:
+
+* Edit
+* Delete
+* Done
+* In Progress
+
+---
+
+# PHASE 5 — ERROR HANDLING
+
+Backend:
+
+* invalid ID
+* empty description
+* invalid status
+* corrupted JSON
+
+Frontend:
+
+* empty input
+* failed requests
+
+---
+
+# PHASE 6 — CLEAN ARCHITECTURE
+
+DO NOT:
+
+* put all logic in controller
+* manipulate JSON in controller
+
+DO:
+
+* controller → handles HTTP
+* service → business logic
+* model → data structure
+
+---
+
+# PHASE 7 — FINAL FEATURES
+
+Minimum:
+
+* add
+* update
+* delete
+* list
+* filter
+* mark done
+* mark in progress
+
+---
+
+# OPTIONAL SENIOR FEATURES
+
+After MVP works:
+
+## GOOD ADDITIONS
+
+* search
+* pagination
+* dark mode
+* localStorage caching
+* animations
+* Docker
+* MySQL
+* JWT auth
+* React frontend
+* deploy backend
+
+---
+
+# RECOMMENDED DEVELOPMENT ORDER
+
+1. Task model
+2. JSON read/write
+3. Add task
+4. Get tasks
+5. Update task
+6. Delete task
+7. Status update
+8. Test backend
+9. Build frontend
+10. Connect frontend
+
